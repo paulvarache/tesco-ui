@@ -1,0 +1,101 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-drawer-panel/paper-drawer-panel.html">
+<link rel="import" href="../bower_components/paper-header-panel/paper-header-panel.html">
+<link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
+<link rel="import" href="./tesco-product.html">
+<link rel="import" href="./tesco-basket.html">
+<link rel="import" href="./tesco-basket-line.html">
+
+<dom-module id="tesco-ui">
+    <style>
+        :host {
+            display: block;
+        }
+        :host .main-toolbar {
+            --paper-toolbar-background: white;
+            --paper-toolbar-color: black;
+        }
+        :host paper-icon-button {
+            color: var(--default-primary-color) !important;
+        }
+        :host .toolbar-content {
+            width: 100%;
+        }
+        :host .main-content {
+            padding-top: 20px;
+        }
+    </style>
+    <template>
+        <iron-ajax
+            auto
+            url="/data.json"
+            handle-as="json"
+            last-response="{{storage}}"
+        ></iron-ajax>
+        <paper-drawer-panel>
+            <paper-header-panel drawer>
+                <paper-toolbar>
+                    <h1>Basket</h1>
+                </paper-toolbar>
+                <tesco-basket basket="{{storage.Details}}" id="basket"></tesco-basket>
+            </paper-header-panel>
+            <paper-header-panel main>
+                <paper-toolbar class="main-toolbar">
+                    <div class="layout horizontal toolbar-content">
+                        <paper-icon-button icon="menu" style="color: white;" paper-drawer-toggle></paper-icon-button>
+                        <div class="flex"></div>
+                        <div>
+                            <label for="">Sort by:&nbsp;</label>
+                            <select value="{{sortKey::change}}">
+                                <option value="Price">Price</option>
+                                <option value="UnitPrice">Unit price</option>
+                            </select>
+                        </div>
+                    </div>
+                </paper-toolbar>
+                <div class="layout horizontal center-justified wrap main-content">
+                    <template
+                        id="productTemplate"
+                        is="dom-repeat"
+                        items="{{storage.Details}}"
+                        as="product"
+                        sort="compareProducts">
+                        <tesco-product data="{{product}}"></tesco-product>
+                    </template>
+                </div>
+            </paper-header-panel>
+        </paper-drawer-panel>
+    </template>
+</dom-module>
+<script>
+    Polymer({
+        is: 'tesco-ui',
+        properties: {
+            sortKey: {
+                type: String,
+                value: 'Price',
+                observer: '_sortKeyChanged'
+            },
+            basket: {
+                type: Array,
+                value: []
+            }
+        },
+        _sortKeyChanged: function () {
+            this.$.productTemplate.render();
+        },
+        compareProducts: function (a, b) {
+            if (a[this.sortKey] < b[this.sortKey]) {
+                return -1;
+            }
+            if (a[this.sortKey] > b[this.sortKey]) {
+                return 1;
+            }
+            return 0;
+        }
+    });
+</script>

@@ -1,0 +1,75 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
+<link rel="import" href="./tesco-quantity.html">
+
+<dom-module id="tesco-basket-line">
+    <style>
+        :host {
+            display: block;
+        }
+        :host iron-image {
+            max-width: 33%;
+        }
+        :host .name {
+            font-size: 0.8em;
+        }
+        :host .remove {
+            margin-left: 5px;
+            font-size: 1.1em;
+            color: var(--default-primary-color);
+            background-color: white;
+            border-radius: 4px;
+            border: 1px solid grey;
+        }
+        :host .remove:hover {
+            cursor: pointer;
+        }
+        :host .price {
+            font-weight: bold;
+        }
+        :host .quantity-controls{
+            --tesco-quantity-font-size: 1em;
+        }
+    </style>
+    <template>
+        <div class="layout horizontal center-center">
+            <iron-image preload src="{{data.Image}}" style="height: 50px" sizing="contain" class="flex"></iron-image>
+            <div class="name flex">{{data.Name}}</div>
+            <button class="self-start remove" on-click="removeLine" aria-label="remove item">x</button>
+        </div>
+        <div class="layout horizontal">
+            <tesco-quantity class="flex quantity-controls" value="{{data.BasketQty}}"></tesco-quantity>
+            <div class="price">{{totalPrice}}</div>
+        </div>
+    </template>
+</dom-module>
+<script>
+    Polymer({
+        is: 'tesco-basket-line',
+        properties: {
+            data: {
+                type: Object,
+                notify: true
+            },
+            totalPrice: {
+                type: Number,
+                computed: 'getTotalPrice(data.Price, data.BasketQty)'
+            },
+            currency: {
+                type: String,
+                value: '£'
+            }
+        },
+        currencyFilter: function (value, cur) {
+            return cur + ' ' + value.toFixed(2);
+        },
+        getTotalPrice: function (price, qty) {
+            return this.currencyFilter(price * qty, this.currency);
+        },
+        removeLine: function () {
+            this.set('data.BasketQty', 0);
+        }
+    });
+</script>

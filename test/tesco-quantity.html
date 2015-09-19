@@ -1,0 +1,57 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+        <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+        <script src="../bower_components/web-component-tester/browser.js"></script>
+        <script src="../bower_components/test-fixture/test-fixture-mocha.js"></script>
+        <link rel="import" href="../bower_components/test-fixture/test-fixture.html">
+
+        <link rel="import" href="../components/tesco-quantity.html">
+    </head>
+    <body>
+
+        <test-fixture id="TescoQuantity">
+            <template>
+                <tesco-quantity></tesco-quantity>
+            </template>
+        </test-fixture>
+
+        <script>
+
+        suite('<tesco-quantity>', function() {
+            var quantity;
+
+            suiteSetup(function () {
+                quantity = fixture('TescoQuantity');
+            });
+
+            test('Add one when click on more', function() {
+                assert.equal(quantity.value, 0);
+                quantity.more();
+                assert.equal(quantity.value, 1);
+            });
+            test('Remove one when click on less', function() {
+                quantity.value = 27;
+                quantity.less();
+                assert.equal(quantity.value, 26);
+            });
+            test('Stop decreasing at min', function() {
+                quantity.min = 0;
+                quantity.value = 1;
+                quantity.less();
+                quantity.less();
+                assert.equal(quantity.value, 0);
+            });
+            test('Stop increasing at max', function() {
+                quantity.max = 1;
+                quantity.more();
+                quantity.more();
+                assert.equal(quantity.value, 1);
+            });
+        });
+        </script>
+
+    </body>
+</html>

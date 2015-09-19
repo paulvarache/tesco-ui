@@ -1,0 +1,130 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
+<link rel="import" href="./tesco-quantity.html">
+
+<dom-module id="tesco-product">
+    <style>
+        :host {
+            min-width: 150px;
+            max-width: 300px;
+            margin: 7px;
+        }
+        :host paper-button {
+            background-color: var(--default-primary-color);
+            color: white;
+        };
+        :host paper-card::shadow paper-material {
+            height: auto;
+        }
+        :host .price {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        :host .prices {
+            width: 100%;
+            padding: 15px;
+            border-top: 1px solid grey;
+        }
+        :host .name {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        :host .add-controls {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        :host .quantity-controls {
+            --tesco-quantity-font-size: 2em;
+        }
+        :host .to-shelf {
+            border-top: 1px solid grey;
+            padding: 5px;
+            margin-top: 20px;
+        }
+        :host .reward {
+            padding: 20px;
+            font-weight: 200;
+        }
+        :host .in-basket {
+            padding: 7px;
+            width: 70%;
+        }
+    </style>
+    <template>
+        <paper-card>
+            <div class="card-content layout vertical center-center">
+                <iron-image preload src="{{data.Image}}" style="height: 100px"></iron-image>
+                <div class="name">{{data.Name}}</div>
+                <div class="reward">{{reward}}</div>
+                <div class="layout horizontal prices">
+                    <div class="price flex">{{price}}</div>
+                    <div>{{unit}}</div>
+                </div>
+                <div class="layout horizontal around-justified add-controls">
+                    <tesco-quantity value="{{qty}}" label="Quantity" class="quantity-controls"></tesco-quantity>
+                    <paper-button raised on-click="add" class="self-end">Add</paper-button>
+                </div>
+                <div>
+                    <a href="">Save to shopping list</a>
+                </div>
+                <div class="to-shelf">
+                    <a href="">Rest to shelf ></a>
+                </div>
+                <template  is="dom-if" if="{{data.BasketQty}}">
+                    <div class="layout horizontal in-basket">
+                        <div class="flex"><iron-icon icon="check"></iron-icon></div>
+                        <div><span>{{data.BasketQty}}<span> in basket</div>
+                    </div>
+                </template>
+            </div>
+        </paper-card>
+    </template>
+</dom-module>
+<script>
+    Polymer({
+        is: 'tesco-product',
+        properties: {
+            data: {
+                type: Object,
+                notify: true
+            },
+            currency: {
+                type: String,
+                value: '£'
+            },
+            qty: {
+                type: Number,
+                value: 0
+            },
+            price: {
+                computed: 'currencyFilter(data.Price, currency)'
+            },
+            unit: {
+                computed: 'unitFilter(data.UnitPrice, data.unitType)'
+            },
+            reward: {
+                computed: 'rewardFilter(data.Promotions)'
+            }
+        },
+        currencyFilter: function (value, cur) {
+            return cur + ' ' + value.toFixed(2);
+        },
+        unitFilter: function (price, type) {
+            return '(' + this.currencyFilter(price, this.currency) + '/' + type + ')';
+        },
+        rewardFilter: function (promotions) {
+            var rewards = promotions.filter(function (promotion) {
+                return promotion.Type = 'Reward';
+            });
+            return rewards.length ? rewards[0].Description : '';
+        },
+        add: function () {
+            if (this.qty > 0) {
+                this.set('data.BasketQty', this.data.BasketQty + this.qty);
+            }
+        }
+    });
+</script>

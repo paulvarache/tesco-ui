@@ -1,0 +1,71 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
+<link rel="import" href="./tesco-basket-line.html">
+
+
+<dom-module id="tesco-basket">
+    <style>
+        :host {
+            display: block;
+            padding: 7px;
+        }
+        :host .total {
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 1.1em;
+            width: 100%;
+        }
+    </style>
+    <template>
+        <div class="layout vertical center">
+            <template
+                id="basketTemplate"
+                is="dom-repeat"
+                items="{{basket}}"
+                as="basketLine"
+                filter="isInBasket"
+                observe="BasketQty">
+                <tesco-basket-line data="{{basketLine}}"></tesco-basket-line>
+            </template>
+            <div class="flex"></div>
+            <div class="layout horizontal total">
+                <div class="flex">Total: </div>
+                <div>{{total}}</div>
+            </div>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is: 'tesco-basket',
+            properties: {
+                basket: {
+                    type: Array,
+                    value: [],
+                    notify: true
+                },
+                total: {
+                    type: Number,
+                    computed: '_getTotal(basket.*, currency)'
+                },
+                currency: {
+                    type: String,
+                    value: '£'
+                }
+            },
+            isInBasket: function (product) {
+                return product.BasketQty;
+            },
+            _getTotal: function (lines, currency) {
+                var total = lines.base.reduce(function (total, line) {
+                    return total + (line.BasketQty * line.Price);
+                }, 0);
+                return this.currencyFilter(total, currency);
+            },
+            currencyFilter: function (value, cur) {
+                return cur + ' ' + value.toFixed(2);
+            }
+        });
+    </script>
+</dom-module>

@@ -1,0 +1,83 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+<dom-module id="tesco-quantity">
+    <style>
+        :host button {
+            background-color: white;
+            color: var(--default-primary-color);
+            padding: 3px;
+            font-weight: bold;
+            font-size: var(--tesco-quantity-font-size, 1.5em);
+            padding: 0px 7px;
+            border: 1px solid grey;
+        }
+        :host button:hover {
+            cursor: pointer;
+        }
+        :host .less {
+            margin-right: 0px;
+            border-top-left-radius: 3px;
+            border-bottom-left-radius: 3px;
+            border-right: 0px;
+        }
+        :host .more {
+            margin-left: 0px;
+            border-top-right-radius: 3px;
+            border-bottom-right-radius: 3px;
+            border-left: 0px;
+        }
+        :host input {
+            font-size: var(--tesco-quantity-font-size, 1.5em);
+            text-align: center;
+            width: var(--tesco-quantity-font-size, 1.5em);
+            border: 1px solid grey;
+        }
+        :host .title {
+            color: grey;
+            text-align: center;
+            font-weight: 200;
+        }
+    </style>
+    <template>
+        <div class="title">{{label}}</div>
+        <div class="layout horizontal controls">
+            <button class="less" on-click="less" aria-label="less">-</button>
+            <input type="text" value="{{value::input}}" aria-label="quantity">
+            <button class="more" on-click="more" aria-label="more">+</button>
+        </div>
+    </template>
+</dom-module>
+<script>
+    Polymer({
+        is: 'tesco-quantity',
+        properties: {
+            value: {
+                type: Number,
+                value: 0,
+                notify: true
+            },
+            label: {
+                type: String
+            },
+            min: {
+                type: Number
+            },
+            max: {
+                type: Number
+            }
+        },
+        more: function () {
+            if (typeof this.max === 'undefined'
+                || this.value + 1 <= this.max) {
+                this.value++;
+            }
+        },
+        less: function () {
+            if (typeof this.min === 'undefined'
+                || this.value - 1 >= this.min) {
+                this.value--;
+            }
+        }
+    });
+</script>
